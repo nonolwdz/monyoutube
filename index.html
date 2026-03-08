@@ -3,31 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TubePure - Recherche Sans Pub</title>
+    <title>TubePure V2 - Anti-Blocage</title>
     <style>
         :root { --main-red: #ff4747; --bg-dark: #0f0f0f; --card-bg: #1e1e1e; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-dark); color: white; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .container { width: 100%; max-width: 1000px; }
-        h1 { color: var(--main-red); text-align: center; font-size: 2.5rem; margin-bottom: 10px; }
+        body { font-family: sans-serif; background-color: var(--bg-dark); color: white; margin: 0; padding: 15px; text-align: center; }
+        .container { width: 100%; max-width: 900px; margin: auto; }
+        h1 { color: var(--main-red); font-size: 1.8rem; }
         
-        .search-area { display: flex; gap: 10px; margin-bottom: 30px; }
-        input { flex: 1; padding: 15px; border-radius: 8px; border: none; background: #2a2a2a; color: white; font-size: 1rem; }
-        button { padding: 15px 25px; background: var(--main-red); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        button:hover { background: #cc3636; transform: translateY(-2px); }
+        .search-area { display: flex; gap: 8px; margin-bottom: 15px; }
+        input { flex: 1; padding: 12px; border-radius: 8px; border: none; background: #2a2a2a; color: white; }
+        button { padding: 12px; background: var(--main-red); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
+        
+        .server-status { font-size: 0.8rem; margin-bottom: 15px; color: #aaa; }
+        .server-btn { background: #444; font-size: 0.7rem; padding: 5px 10px; margin-left: 5px; }
 
-        /* Lecteur principal */
-        #video-view { display: none; margin-bottom: 30px; }
+        #video-view { display: none; margin-top: 10px; }
         .player-wrapper { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 12px; overflow: hidden; background: black; }
         .player-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
-        /* Grille de recherche */
-        .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
-        .video-card { background: var(--card-bg); border-radius: 10px; overflow: hidden; cursor: pointer; transition: 0.3s; }
-        .video-card:hover { transform: scale(1.03); background: #2a2a2a; }
+        .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 20px; }
+        .video-card { background: var(--card-bg); border-radius: 10px; overflow: hidden; cursor: pointer; }
         .video-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
-        .video-card h3 { font-size: 0.9rem; padding: 10px; margin: 0; line-height: 1.3; height: 2.6rem; overflow: hidden; }
-        
-        .loader { display: none; color: gray; margin: 20px; }
+        .video-card h3 { font-size: 0.8rem; padding: 8px; margin: 0; height: 2.5rem; overflow: hidden; }
     </style>
 </head>
 <body>
@@ -35,6 +32,89 @@
 <div class="container">
     <h1>TubePure</h1>
     
+    <div class="server-status">
+        Serveur actuel : <span id="current-server-name">Chargement...</span>
+        <button class="server-btn" onclick="switchInstance()">Changer de serveur</button>
+    </div>
+
+    <div class="search-area">
+        <input type="text" id="query" placeholder="Chercher une vidéo...">
+        <button onclick="handleAction()">OK</button>
+    </div>
+
+    <div id="video-view">
+        <div class="player-wrapper">
+            <iframe id="main-player" src="" allowfullscreen></iframe>
+        </div>
+        <button onclick="closePlayer()" style="margin-top:10px; width:100%; background:#333;">Fermer la vidéo</button>
+    </div>
+
+    <div id="results" class="results-grid"></div>
+</div>
+
+<script>
+    // Liste des serveurs qui fonctionnent le mieux en 2026
+    const instances = [
+        "https://invidious.projectsegfau.lt",
+        "https://invidious.lunar.icu",
+        "https://iv.melmac.space",
+        "https://inv.tux.rs",
+        "https://invidious.nerdvpn.de"
+    ];
+
+    let currentIdx = 0;
+
+    function updateServerDisplay() {
+        document.getElementById('current-server-name').innerText = instances[currentIdx].replace('https://', '');
+    }
+
+    function switchInstance() {
+        currentIdx = (currentIdx + 1) % instances.length;
+        updateServerDisplay();
+        alert("Serveur changé ! Réessayez votre recherche.");
+    }
+
+    async function handleAction() {
+        const input = document.getElementById('query').value;
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = "Recherche en cours sur " + instances[currentIdx] + "...";
+
+        try {
+            const response = await fetch(`${instances[currentIdx]}/api/v1/search?q=${encodeURIComponent(input)}`);
+            const data = await response.json();
+            resultsDiv.innerHTML = "";
+            
+            data.forEach(video => {
+                if (video.type === "video") {
+                    const card = document.createElement('div');
+                    card.className = 'video-card';
+                    card.onclick = () => launchVideo(video.videoId);
+                    card.innerHTML = `<img src="${instances[currentIdx]}/vi/${video.videoId}/mqdefault.jpg"><h3>${video.title}</h3>`;
+                    resultsDiv.appendChild(card);
+                }
+            });
+        } catch (error) {
+            resultsDiv.innerHTML = "❌ Ce serveur est bloqué ou saturé. Cliquez sur 'Changer de serveur' en haut.";
+        }
+    }
+
+    function launchVideo(id) {
+        const player = document.getElementById('main-player');
+        player.src = `${instances[currentIdx]}/embed/${id}?autoplay=1`;
+        document.getElementById('video-view').style.display = "block";
+        window.scrollTo(0,0);
+    }
+
+    function closePlayer() {
+        document.getElementById('main-player').src = "";
+        document.getElementById('video-view').style.display = "none";
+    }
+
+    updateServerDisplay();
+</script>
+
+</body>
+</html>    
     <div class="search-area">
         <input type="text" id="query" placeholder="Chercher une vidéo ou coller un lien YouTube...">
         <button onclick="handleAction()">Rechercher</button>
