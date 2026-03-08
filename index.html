@@ -3,38 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Portail Vidéo</title>
+    <title>MyYouTube | Votre Expérience Vidéo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        /* Design moderne et sombre */
-        body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            background-color: #0f0f0f;
-            color: white;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --accent-color: #ff0055;
+            --bg-dark: #0f0c29;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --text-light: #f5f5f5;
         }
 
-        .header {
-            width: 100%;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--bg-dark);
+            background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
+            color: var(--text-light);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR --- */
+        nav {
+            width: 250px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
             padding: 20px;
-            background: #202020;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
             margin-bottom: 30px;
         }
 
-        .container {
-            width: 95%;
-            max-width: 900px;
-            text-align: center;
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-light);
+            padding: 12px 15px;
+            border-radius: 12px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
-        .input-group {
+        .nav-link:hover, .nav-link.active {
+            background: var(--primary-gradient);
+            box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
+        }
+
+        /* --- MAIN CONTENT --- */
+        main {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        header {
             display: flex;
-            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .search-bar {
+            background: var(--glass-bg);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 30px;
+            width: 50%;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-bar input {
+            background: none;
+            border: none;
+            color: white;
+            width: 100%;
+            outline: none;
+            margin-left: 10px;
+        }
+
+        /* --- VIDEO PLAYER SECTION --- */
+        .video-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto 40px;
+            background: #000;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            aspect-ratio: 16 / 9;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* --- VIDEO GRID --- */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .video-card {
+            background: var(--glass-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-color);
+        }
+
+        .thumbnail {
+            width: 100%;
+            height: 150px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .card-content {
+            padding: 15px;
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .card-info {
+            font-size: 0.75rem;
+            color: #aaa;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: var(--glass-bg); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">
+            <i class="fab fa-youtube"></i> MyYouTube
+        </div>
+        <a href="#" class="nav-link active"><i class="fas fa-home"></i> Accueil</a>
+        <a href="#" class="nav-link"><i class="fas fa-fire"></i> Tendances</a>
+        <a href="#" class="nav-link"><i class="fas fa-layer-group"></i> Bibliothéque</a>
+        <a href="#" class="nav-link"><i class="fas fa-history"></i> Historique</a>
+        <hr style="opacity: 0.1; margin: 10px 0;">
+        <a href="#" class="nav-link"><i class="fas fa-heart"></i> Likées</a>
+        <a href="#" class="nav-link"><i class="fas fa-cog"></i> Paramètres</a>
+    </nav>
+
+    <main>
+        <header>
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Rechercher une vidéo sur MyYouTube...">
+            </div>
+            <div class="user-profile">
+                <i class="fas fa-bell" style="margin-right: 20px; cursor: pointer;"></i>
+                <img src="https://ui-avatars.com/api/?name=User&background=random" alt="Avatar" style="width: 40px; border-radius: 50%; border: 2px solid var(--accent-color);">
+            </div>
+        </header>
+
+        <section class="video-container" id="main-player">
+            <iframe id="youtube-iframe" src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+        </section>
+
+        <h2 style="margin-bottom: 20px;">Recommandations pour vous</h2>
+
+        <div class="video-grid" id="video-grid">
+            </div>
+    </main>
+
+    <script>
+        // Liste de vidéos fictives
+        const videos = [
+            { id: 'tgbNymZ7vqY', title: 'Voyage au bout du monde', author: 'ExploWorld', views: '1.2M' },
+            { id: 'LXb3EKWsInQ', title: 'Apprendre le Design en 10 min', author: 'ArtDesign', views: '850K' },
+            { id: '3JZ_D3ELwOQ', title: 'Coding Challenge : MyYouTube', author: 'DevMaster', views: '45K' },
+            { id: 'ScMzIvxBSi4', title: 'Lo-Fi Hip Hop - Études', author: 'ChillVibes', views: '10M' },
+            { id: '2Vv-BfVoq4g', title: 'Top 10 Lieux Insolites', author: 'TopRank', views: '2.1M' },
+            { id: 'M7lc1UVf-VE', title: 'Futur de l\'IA en 2026', author: 'TechToday', views: '300K' }
+        ];
+
+        const grid = document.getElementById('video-grid');
+        const iframe = document.getElementById('youtube-iframe');
+
+        // Fonction pour changer la vidéo
+        function changeVideo(id) {
+            iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Génération des cartes
+        videos.forEach(video => {
+            const card = document.createElement('div');
+            card.className = 'video-card';
+            card.onclick = () => changeVideo(video.id);
+            
+            card.innerHTML = `
+                <div class="thumbnail" style="background-image: url('https://img.youtube.com/vi/${video.id}/mqdefault.jpg')"></div>
+                <div class="card-content">
+                    <div class="card-title">${video.title}</div>
+                    <div class="card-info">${video.author} • ${video.views} vues</div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    </script>
+</body>
+</html>            gap: 10px;
             margin-bottom: 25px;
         }
 
