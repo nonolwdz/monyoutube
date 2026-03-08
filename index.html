@@ -3,38 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TubePure V3 - 100% Fonctionnel</title>
+    <title>Mon Portail Vidéo</title>
     <style>
-        body { font-family: sans-serif; background: #121212; color: white; text-align: center; padding: 20px; }
-        .box { background: #1e1e1e; padding: 20px; border-radius: 15px; max-width: 500px; margin: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h1 { color: #ff4747; }
-        input { width: 90%; padding: 15px; margin: 10px 0; border-radius: 8px; border: none; background: #333; color: white; }
-        button { width: 95%; padding: 15px; background: #ff4747; border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; }
-        .info { font-size: 0.8rem; color: #888; margin-top: 20px; line-height: 1.5; }
-        select { background: #333; color: white; padding: 5px; border-radius: 5px; margin-top: 10px; }
+        /* Design moderne et sombre */
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: #0f0f0f;
+            color: white;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            width: 100%;
+            padding: 20px;
+            background: #202020;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            margin-bottom: 30px;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        input {
+            flex: 1;
+            padding: 15px;
+            border-radius: 30px;
+            border: 1px solid #333;
+            background: #121212;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input:focus { border-color: #ff0000; }
+
+        button {
+            padding: 0 25px;
+            border-radius: 30px;
+            border: none;
+            background: #ff0000;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover { background: #cc0000; }
+
+        /* Le lecteur vidéo */
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* Ratio 16:9 */
+            height: 0;
+            background: #000;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            display: none; /* Caché au début */
+        }
+
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .welcome-msg {
+            margin-top: 50px;
+            color: #aaa;
+        }
     </style>
 </head>
 <body>
 
-    <div class="box">
-        <h1>TubePure</h1>
-        <p>Regarde YouTube sans pubs</p>
+    <div class="header">
+        <h2 style="margin:0; color:#ff0000;">TubeView</h2>
+    </div>
 
-        <input type="text" id="vidUrl" placeholder="Colle un lien YouTube ici...">
-        <button onclick="playVideo()">LIRE SANS PUB</button>
+    <div class="container">
+        <div class="input-group">
+            <input type="text" id="videoUrl" placeholder="Colle le lien de ta vidéo ici...">
+            <button onclick="loadVideo()">LANCER</button>
+        </div>
 
-        <hr style="margin: 20px; border: 0.5px solid #333;">
+        <div id="playerContainer" class="video-wrapper">
+            <iframe id="videoFrame" src="" allowfullscreen allow="autoplay"></iframe>
+        </div>
 
-        <input type="text" id="searchQuery" placeholder="Ou tape une recherche...">
-        <button onclick="searchVideo()" style="background: #444;">RECHERCHER</button>
+        <div id="welcome" class="welcome-msg">
+            <p>Entre un lien YouTube pour commencer à regarder.</p>
+        </div>
+    </div>
 
-        <div class="info">
-            Serveur : 
-            <select id="serverSelect">
-                <option value="https://invidious.projectsegfau.lt">Project Segfault</option>
-                <option value="https://yewtu.be">Yewtu.be</option>
-                <option value="https://inv.tux.rs">Tux.rs</option>
-                <option value="https://iv.melmac.space">Melmac</option>
+    <script>
+        function loadVideo() {
+            const url = document.getElementById('videoUrl').value;
+            const frame = document.getElementById('videoFrame');
+            const container = document.getElementById('playerContainer');
+            const welcome = document.getElementById('welcome');
+            
+            let videoId = "";
+
+            // Extraction de l'ID YouTube
+            if (url.includes("v=")) {
+                videoId = url.split("v=")[1].split("&")[0];
+            } else if (url.includes("youtu.be/")) {
+                videoId = url.split("youtu.be/")[1].split("?")[0];
+            } else if (url.includes("shorts/")) {
+                videoId = url.split("shorts/")[1].split("?")[0];
+            }
+
+            if (videoId) {
+                // On transforme le lien en version "Embed" (intégration)
+                frame.src = "https://www.youtube.com/embed/" + videoId + "?autoplay=1&rel=0";
+                container.style.display = "block";
+                welcome.style.display = "none";
+            } else {
+                alert("Oups ! Ce lien ne semble pas être un lien YouTube valide.");
+            }
+        }
+    </script>
+
+</body>
+</html>                <option value="https://iv.melmac.space">Melmac</option>
             </select>
             <br><br>
             Note : La recherche s'ouvrira dans un nouvel onglet pour éviter les blocages.
