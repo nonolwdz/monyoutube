@@ -3,38 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TubePure V2 - Anti-Blocage</title>
+    <title>TubePure V3 - 100% Fonctionnel</title>
     <style>
-        :root { --main-red: #ff4747; --bg-dark: #0f0f0f; --card-bg: #1e1e1e; }
-        body { font-family: sans-serif; background-color: var(--bg-dark); color: white; margin: 0; padding: 15px; text-align: center; }
-        .container { width: 100%; max-width: 900px; margin: auto; }
-        h1 { color: var(--main-red); font-size: 1.8rem; }
-        
-        .search-area { display: flex; gap: 8px; margin-bottom: 15px; }
-        input { flex: 1; padding: 12px; border-radius: 8px; border: none; background: #2a2a2a; color: white; }
-        button { padding: 12px; background: var(--main-red); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
-        
-        .server-status { font-size: 0.8rem; margin-bottom: 15px; color: #aaa; }
-        .server-btn { background: #444; font-size: 0.7rem; padding: 5px 10px; margin-left: 5px; }
-
-        #video-view { display: none; margin-top: 10px; }
-        .player-wrapper { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 12px; overflow: hidden; background: black; }
-        .player-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-
-        .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 20px; }
-        .video-card { background: var(--card-bg); border-radius: 10px; overflow: hidden; cursor: pointer; }
-        .video-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
-        .video-card h3 { font-size: 0.8rem; padding: 8px; margin: 0; height: 2.5rem; overflow: hidden; }
+        body { font-family: sans-serif; background: #121212; color: white; text-align: center; padding: 20px; }
+        .box { background: #1e1e1e; padding: 20px; border-radius: 15px; max-width: 500px; margin: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h1 { color: #ff4747; }
+        input { width: 90%; padding: 15px; margin: 10px 0; border-radius: 8px; border: none; background: #333; color: white; }
+        button { width: 95%; padding: 15px; background: #ff4747; border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+        .info { font-size: 0.8rem; color: #888; margin-top: 20px; line-height: 1.5; }
+        select { background: #333; color: white; padding: 5px; border-radius: 5px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>TubePure</h1>
-    
-    <div class="server-status">
-        Serveur actuel : <span id="current-server-name">Chargement...</span>
-        <button class="server-btn" onclick="switchInstance()">Changer de serveur</button>
+    <div class="box">
+        <h1>TubePure</h1>
+        <p>Regarde YouTube sans pubs</p>
+
+        <input type="text" id="vidUrl" placeholder="Colle un lien YouTube ici...">
+        <button onclick="playVideo()">LIRE SANS PUB</button>
+
+        <hr style="margin: 20px; border: 0.5px solid #333;">
+
+        <input type="text" id="searchQuery" placeholder="Ou tape une recherche...">
+        <button onclick="searchVideo()" style="background: #444;">RECHERCHER</button>
+
+        <div class="info">
+            Serveur : 
+            <select id="serverSelect">
+                <option value="https://invidious.projectsegfau.lt">Project Segfault</option>
+                <option value="https://yewtu.be">Yewtu.be</option>
+                <option value="https://inv.tux.rs">Tux.rs</option>
+                <option value="https://iv.melmac.space">Melmac</option>
+            </select>
+            <br><br>
+            Note : La recherche s'ouvrira dans un nouvel onglet pour éviter les blocages.
+        </div>
+    </div>
+
+<script>
+    function playVideo() {
+        const url = document.getElementById('vidUrl').value;
+        const server = document.getElementById('serverSelect').value;
+        let id = "";
+
+        if (url.includes("v=")) id = url.split("v=")[1].split("&")[0];
+        else if (url.includes("youtu.be/")) id = url.split("youtu.be/")[1].split("?")[0];
+        else if (url.includes("shorts/")) id = url.split("shorts/")[1].split("?")[0];
+
+        if (id) {
+            window.location.href = server + "/watch?v=" + id;
+        } else {
+            alert("Lien non reconnu. Copie bien l'adresse entière.");
+        }
+    }
+
+    function searchVideo() {
+        const q = document.getElementById('searchQuery').value;
+        const server = document.getElementById('serverSelect').value;
+        if (q) {
+            // On ouvre directement la recherche sur le serveur Invidious
+            window.open(server + "/search?q=" + encodeURIComponent(q), "_blank");
+        }
+    }
+</script>
+
+</body>
+</html>        <button class="server-btn" onclick="switchInstance()">Changer de serveur</button>
     </div>
 
     <div class="search-area">
